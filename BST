@@ -1,0 +1,421 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+
+
+class node
+{
+public:
+    int key;
+    node *left, *right;
+};
+
+
+class BST{
+
+private:
+
+    node * root;
+
+    node *newNode(int item)
+    {
+
+        node *temp = new node;
+        temp->key = item;
+        temp->left = temp->right = NULL;
+        return temp;
+    }
+
+public:
+
+    BST()
+    {
+        root = NULL;
+    }
+
+    void inorder(node *root)
+    {
+        if (root != NULL)
+        {
+            inorder(root->left);
+            cout << root->key << " ";
+            inorder(root->right);
+        }
+    }
+
+    void preorder(node *root)
+    {
+        if (root != NULL)
+        {
+            cout << root->key << " ";
+            preorder(root->left);
+            preorder(root->right);
+        }
+    }
+
+    void postorder(node *root)
+    {
+        if (root != NULL)
+        {
+            postorder(root->left);
+            postorder(root->right);
+            cout << root->key << " ";
+        }
+    }
+
+    node* insert(node* node, int key)
+    {
+        /* If the tree is empty, return a new node */
+
+        if (node == NULL)
+			{
+				return newNode(key);
+		    }
+		/* Otherwise, recur down the tree */
+
+        if (key < node->key)
+		{
+            node->left = insert(node->left, key);
+		}
+        else
+		{
+            node->right = insert(node->right, key);
+        }
+
+        return node;
+    }
+
+	
+	
+	node* Find(node*root, int data) {
+	if(root == NULL) return NULL;
+	else if(root->key == data) return root;
+	else if(root->key < data) return Find(root->right,data);
+	else return Find(root->left,data);
+}
+
+	//Function to find Inorder Successor in a BST
+   node* Getsuccessor(node* root,int data) {
+	// Search the Node - O(h)
+	node* current = Find(root,data);
+	if(current == NULL) return NULL;
+	if(current->right != NULL) {  //Case 1: Node has right subtree
+		return minValueNode(current->right); // O(h)
+	}
+	else {   //Case 2: No right subtree  - O(h)
+		node* successor = NULL;
+		node* ancestor = root;
+		while(ancestor != current) {
+			if(current->key < ancestor->key) {
+				successor = ancestor; // so far this is the deepest node for which current node is in left
+				ancestor = ancestor->left;
+			}
+			else
+				ancestor = ancestor->right;
+		}
+		return successor;
+	}
+}
+
+	bool Search(node* root,int data) {
+	if(root == NULL) {
+		return false;
+	}
+	else if(root->key == data) {
+		return true;
+	}
+	else if(data <= root->key) {
+		return Search(root->left,data);
+	}
+	else {
+		return Search(root->right,data);
+	}
+
+}
+
+    node *minValueNode(node* n)
+    {
+
+        node* current = n;
+        while (current->left != NULL)
+		{
+        current = current->left;
+	    }
+        return current;
+
+    }
+
+    node * maxValueNode(node* n)
+    {
+        node* current = n;
+        while (current->right != NULL)
+		{
+            current = current->right;
+		}
+        return current;
+    }
+
+   node* GetPredecessor(node* root,int data) {
+	// Search the Node - O(h)
+	node* current = Find(root,data);
+	if(current == NULL) return NULL;
+	if(current->left != NULL) {  //Case 1: Node has left subtree
+		return maxValueNode(current->right); // O(h)
+	}
+	else {   //Case 2: No right subtree  - O(h)
+		node* successor = NULL;
+		node* ancestor = root;
+		while(ancestor != current) {
+			if(current->key > ancestor->key) {
+				successor = ancestor; // so far this is the deepest node for which current node is in left
+				ancestor = ancestor->right;
+			}
+			else
+				ancestor = ancestor->left;
+		}
+		return successor;
+	}
+}
+
+  node* deleteNode(node* root, int key)
+    {
+
+        // base case
+        if (root == NULL) return root;
+
+        // If the key to be deleted is smaller than the root's key,
+
+        if (key < root->key)
+		{
+            root->left = deleteNode(root->left, key);
+		}
+        // If the key to be deleted is greater than the root's key,
+		else if (key > root->key)
+		{
+            root->right = deleteNode(root->right, key);
+		}
+       // if key is same as root's key, then This is the node
+        else
+        {
+            // node with only one child or no child
+            if (root->left == NULL)
+            {
+				node *temp = root->right;
+                delete root;
+                return temp;
+            }
+            else if (root->right == NULL)
+            {
+                node *temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            // node with two children: Get the inorder successor (smallest
+
+            // in the right subtree)
+            node* temp = minValueNode(root->right);
+
+            // Copy the inorder successor's content to this node
+            root->key = temp->key;
+
+            // Delete the inorder successor
+            root->right = deleteNode(root->right, temp->key);
+        }
+
+        return root;
+
+    }
+
+  int totalnodecount(node *root)
+{
+    if(root!=NULL)
+    {
+        return 1 + totalnodecount(root->left) + totalnodecount(root->right);
+    }
+    else {
+        return 0;
+    }
+}
+
+  int getLeafCount(node* root)
+{
+  if(root == NULL)       
+    return 0;
+  if(root->left == NULL && root->right==NULL)      
+    return 1;            
+  else
+    return getLeafCount(root->left)+ getLeafCount(root->right);      
+}
+
+
+ 
+
+};
+
+
+int main()
+
+{
+
+    /* Let us create following BST
+          60
+    /          \
+    55         75
+   /  \       /    \
+  45   57     72    76
+  /     \     /  \    \
+ 47     59    61 74    90
+ \                      \
+  53                    95
+  */
+
+    BST t;
+    node *root = NULL;
+    root = t.insert(root, 60);
+    root = t.insert(root, 55);
+    root = t.insert(root, 75);
+    root = t.insert(root, 45);
+    root = t.insert(root, 57);
+    root = t.insert(root, 72);
+    root = t.insert(root, 76);
+	root = t.insert(root, 47);
+    root = t.insert(root, 59);
+    root = t.insert(root, 61);
+    root = t.insert(root, 74);
+    root = t.insert(root, 90);
+    root = t.insert(root, 95);
+    root = t.insert(root, 53);
+
+	int check;
+	
+	while(1)
+	{
+	cout<<endl<<endl<<"---------------------------------"<<endl;
+    cout<<endl<<"Operations on Binary Search Tree"<<endl;
+    cout<<endl<<"---------------------------------"<<endl;
+
+	cout<<endl<<"Assuming that all the numbers are inserted in tree.\n"<<endl<<endl;
+
+    cout<<"Press 1 to tranverse the tree in pre-order."<<endl;
+	cout<<"Press 2 to tranverse the tree in in-order."<<endl;
+	cout<<"Press 3 to tranverse the tree in post-eorder."<<endl;
+	cout<<"Press 4 to search a particular Number in tree."<<endl;
+	cout<<"Press 5 to find successor of the given node."<<endl;
+	cout<<"Press 6 to find predecessor of the given node."<<endl;  
+	cout<<"Press 7 to find the total numbers in above given tree."<<endl;    
+	cout<<"Press 8 to find Identify number of leaf nodes in above given tree."<<endl;
+	cout<<"Press 9 to identify number of nodes at each level in above given tree."<<endl;
+	cout<<"Press 10 to delete node from a tree."<<endl;
+	cout<<"Press 11 to exit."<<endl;
+	cout<<"\n-> Enter your choise: ";
+    cin>>check;
+    switch(check)
+	{
+	case 1:
+		{
+		cout <<"\nPreorder traversal of the given tree \n";
+        t.preorder(root);
+		break;
+		}
+	case 2:
+		{
+		cout << "\nIneorder traversal of the given tree \n";
+		t.inorder(root);
+		cout<<endl;
+		break;
+		}
+	case 3:
+		{
+		cout << "\nPostorder traversal of the given tree \n";
+		t.postorder(root);
+		cout<<endl;
+		break;
+		}
+	case 4:
+		{
+		int number;
+		cout<<"\n\nEnter number be searched: ";
+		cin>>number;
+
+		if(t.Search(root,number) == true) 
+		{
+		cout<<"Found\n";
+		}
+		else
+		{
+		cout<<"Not Found\n";
+		}
+		break;
+		}
+	case 5:
+		{
+		int check;
+		cout<<"Enter the number or node ot find its Successor: ";
+		cin>>check;
+		node* successor = t.Getsuccessor(root,check);
+		if(successor == NULL) 
+		{
+			cout<<"No successor Found\n";
+		}
+		else
+		{
+		cout<<"Successor is "<<successor->key<<"\n";
+	    }
+		break;
+		}
+	case 6: 
+		{
+			int check;
+			cout<<"Enter the number or node ot find its Successor: ";
+			cin>>check;
+			node* predecessor = t.GetPredecessor(root,check);
+			if(predecessor == NULL) 
+			{
+				cout<<"No predecessor Found\n";
+			}
+			else
+			{
+				cout<<"Predecessor is "<<predecessor->key<<"\n";
+			}
+			break;
+		}
+	case 7:
+		{
+			cout<<"Total Numbers is the given tree is: "<<t.totalnodecount(root);
+			break;
+		}
+	case 8:
+		{
+			cout<<"Total number of leaf nodes in the given tree is: "<<t.getLeafCount(root);
+			break;
+		}
+	case 9:
+		{
+			break;
+		}
+	case 10:
+		{
+			int check;
+			cout<<"Enter the node your want to delete: ";
+			cin>>check;
+			root = t.deleteNode(root, check);
+			cout<<check<<" is deleted from the tree.";
+			break;
+		}
+	case 11:
+		{
+			exit(1);
+		}
+	default:
+        {
+        cout<<"Invalid Command";
+        }
+	}
+	}
+
+    system("pause");
+    return 0;
+
+}
